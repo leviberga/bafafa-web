@@ -1,6 +1,6 @@
 # Bafafá Web
 
-Front-end do [Bafafá](https://github.com/SEU-USUARIO/bafafa), uma rede social brasileira no estilo microblog. É uma aplicação de página única em **React + TypeScript**, que consome a API do backend (Spring Boot).
+Front-end do [Bafafá](https://github.com/leviberga/bafafa-social), uma rede social brasileira no estilo microblog. É uma aplicação de página única em **React + TypeScript**, que consome a API do backend (Spring Boot).
 
 ## Stack
 
