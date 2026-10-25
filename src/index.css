@@ -1,0 +1,58 @@
+@import "tailwindcss";
+@import "@fontsource-variable/bricolage-grotesque/wdth.css";
+@import "@fontsource-variable/literata/index.css";
+
+/*
+  Identidade visual: a palavra "bafafá" quer dizer rebuliço, e a referência é o cartaz
+  lambe-lambe de rua. As cores saem da tinta desses cartazes; o feed fica quieto e legível.
+*/
+@theme {
+  --color-papel: #f5f7fc;
+  --color-tinta: #14142b;
+  --color-cobalto: #2540d9;
+  --color-ipe: #ffc928;
+  --color-pitanga: #e8336d;
+  --color-mate: #14966b;
+
+  --font-display: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-texto: "Literata Variable", Georgia, "Times New Roman", serif;
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    @apply bg-papel font-display text-tinta antialiased;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-cobalto);
+    outline-offset: 2px;
+  }
+}
+
+/* O único movimento da interface: os blocos do cartaz entram "carimbados" ao abrir a tela de entrada. */
+.carimbo {
+  transform: rotate(var(--r, 0deg));
+  animation: carimbo 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes carimbo {
+  from {
+    opacity: 0;
+    transform: translateY(-16px) rotate(var(--r, 0deg)) scale(1.05);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(var(--r, 0deg)) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carimbo {
+    animation: none;
+  }
+}
