@@ -16,13 +16,13 @@ function colorFor(seed: string): string {
 interface AvatarProps {
   name: string
   seed: string
-  size?: 'sm' | 'md'
+  size?: 'sm' | 'md' | 'lg'
 }
 
 /** Sem foto de perfil ainda: a inicial sobre um bloco de cor, que é sempre a mesma para o mesmo handle. */
 export function Avatar({ name, seed, size = 'md' }: AvatarProps) {
   const initial = Array.from(name.trim())[0]?.toUpperCase() ?? '?'
-  const dimensions = size === 'md' ? 'size-11 text-xl' : 'size-9 text-base'
+  const dimensions = { sm: 'size-9 text-base', md: 'size-11 text-xl', lg: 'size-20 text-4xl' }[size]
   return (
     <span
       aria-hidden="true"

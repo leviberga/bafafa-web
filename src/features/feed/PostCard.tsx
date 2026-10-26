@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import { Avatar } from '../../components/Avatar'
 import { HeartIcon, RepostIcon } from '../../components/icons'
 import { formatFull, formatRelative } from '../../lib/format'
@@ -39,17 +40,26 @@ export function PostCard({ item }: { item: TimelineItem }) {
 
   return (
     <article className="flex gap-3 border-b border-tinta/15 px-4 py-4">
-      <Avatar name={post.author.displayName} seed={post.author.handle} />
+      <Link to={`/perfil/${post.author.handle}`} tabIndex={-1} aria-hidden="true" className="shrink-0 self-start">
+        <Avatar name={post.author.displayName} seed={post.author.handle} />
+      </Link>
       <div className="min-w-0 flex-1">
         {kind === 'REPOST' && repostedBy ? (
           <p className="mb-1 flex items-center gap-1.5 text-sm font-semibold text-mate">
             <RepostIcon className="size-4" />
-            {repostedBy.displayName} repostou
+            <span>
+              <Link to={`/perfil/${repostedBy.handle}`} className="hover:underline">
+                {repostedBy.displayName}
+              </Link>{' '}
+              repostou
+            </span>
           </p>
         ) : null}
 
         <header className="flex flex-wrap items-baseline gap-x-2">
-          <span className="font-bold">{post.author.displayName}</span>
+          <Link to={`/perfil/${post.author.handle}`} className="font-bold hover:underline">
+            {post.author.displayName}
+          </Link>
           <span className="text-sm text-tinta/65">@{post.author.handle}</span>
           <time dateTime={post.createdAt} title={formatFull(post.createdAt)} className="ml-auto text-sm text-tinta/65">
             {formatRelative(post.createdAt)}

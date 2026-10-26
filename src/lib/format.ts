@@ -13,3 +13,7 @@ export function formatRelative(iso: string, now = Date.now()): string {
 export function formatFull(iso: string): string {
   return new Date(iso).toLocaleString('pt-BR', { dateStyle: 'long', timeStyle: 'short' })
 }
+
+export function formatJoined(iso: string): string {
+  return new Date(iso).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+}

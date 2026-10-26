@@ -51,3 +51,21 @@ export interface CreatedPost {
   text: string | null
   createdAt: string
 }
+
+export interface Profile {
+  handle: string
+  displayName: string
+  bio: string
+  createdAt: string
+}
+
+export interface UpdateProfileInput {
+  displayName: string
+  bio: string
+}
+
+export interface FollowStats {
+  followerCount: number
+  followingCount: number
+  followedByMe: boolean
+}

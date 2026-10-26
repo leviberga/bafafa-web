@@ -1,6 +1,6 @@
 # Bafafá Web
 
-Front-end do [Bafafá](https://github.com/leviberga/bafafa-social), uma rede social brasileira no estilo microblog. É uma aplicação de página única em **React + TypeScript**, que consome a API do backend (Spring Boot).
+Front-end do [Bafafá](https://github.com/SEU-USUARIO/bafafa), uma rede social brasileira no estilo microblog. É uma aplicação de página única em **React + TypeScript**, que consome a API do backend (Spring Boot).
 
 ## Stack
 
@@ -34,6 +34,8 @@ Outros comandos: `npm run build` (checagem de tipos e build de produção), `npm
 
 **Curtir e repostar são otimistas.** O número muda na hora no cache do feed e reverte se a API falhar. Não recarregamos o feed logo depois: no backend os contadores são eventualmente consistentes (cerca de meio segundo), e recarregar traria o valor antigo de volta.
 
+**Um feed, vários lugares.** O home e o feed de um perfil usam a mesma lista (`FeedList`) e o mesmo cartão de post. Curtir e repostar atualizam o cache de todos os feeds carregados de uma vez, porque o mesmo post pode estar no home e no perfil. Seguir e deixar de seguir são otimistas e, como o grafo é consistente na hora no backend, recarregam os totais e o feed home em seguida.
+
 **Mensagens de erro que dizem o que fazer.** `lib/errors.ts` traduz erros da API (limite de requisições com o `Retry-After`, sessão expirada, servidor fora do ar) em frases úteis para a pessoa.
 
 ## Identidade visual
@@ -47,8 +49,9 @@ src/
 ├── lib/            // cliente HTTP (api.ts), endpoints, tipos, erros e formatação
 ├── auth/           // contexto de sessão e rotas protegidas
 ├── components/     // layout, avatar, campos, ícones, marca
-├── features/feed/  // consultas, compositor e cartão de post
-└── pages/          // entrar, cadastro, início, não encontrado
+├── features/feed/    // consultas, lista de posts, compositor e cartão de post
+├── features/profile/ // cabeçalho do perfil, seguir e edição
+└── pages/            // entrar, cadastro, início, perfil, não encontrado
 ```
 
 ## Roadmap
@@ -57,8 +60,9 @@ src/
 - [x] Feed *home* com paginação infinita
 - [x] Compositor de posts
 - [x] Curtir e repostar
-- [ ] Página de perfil (feed do usuário, seguir e deixar de seguir, contagens)
+- [x] Página de perfil (`/perfil/:handle`): posts da pessoa, seguir e deixar de seguir, contagens e edição do próprio perfil
 - [ ] Página do post, com a thread de respostas
+- [ ] Perfis públicos para quem não entrou (o backend já os expõe; o front ainda exige login)
 - [ ] Notificações de erro (toasts) para falhas em curtir e repostar
 - [ ] Testes de componentes
 - [ ] Deploy

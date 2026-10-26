@@ -4,13 +4,20 @@ import {
   useQueryClient,
   type InfiniteData,
   type QueryClient,
+  type UseInfiniteQueryResult,
 } from '@tanstack/react-query'
 import { postsApi, timelineApi } from '../../lib/endpoints'
 import type { Engagement, TimelinePage } from '../../lib/types'
 
+/** Todo feed do app começa com 'feed', então dá para atualizar ou invalidar todos de uma vez. */
+export const feedRootKey = ['feed'] as const
 export const homeFeedKey = ['feed', 'home'] as const
+export const userFeedKey = (handle: string) => ['feed', 'user', handle] as const
 
-type FeedData = InfiniteData<TimelinePage, string | undefined>
+export type FeedData = InfiniteData<TimelinePage, string | undefined>
+
+/** O que useInfiniteQuery devolve para os feeds (o tipo do pageParam é inferido como unknown). */
+export type FeedResult = UseInfiniteQueryResult<InfiniteData<TimelinePage, unknown>, Error>
 
 export function useHomeFeed() {
   return useInfiniteQuery({
@@ -21,23 +28,33 @@ export function useHomeFeed() {
   })
 }
 
+export function useUserFeed(handle: string) {
+  return useInfiniteQuery({
+    queryKey: userFeedKey(handle),
+    queryFn: ({ pageParam }) => timelineApi.ofUser(handle, pageParam),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    enabled: handle.length > 0,
+  })
+}
+
 export function useCreatePost() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (text: string) => postsApi.create(text),
-    // Criar um post é consistente na hora, então podemos recarregar o feed.
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: homeFeedKey }),
+    // Criar um post é consistente na hora, então podemos recarregar os feeds (o home e o do próprio perfil).
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: feedRootKey }),
   })
 }
 
 /**
- * Atualiza as curtidas e os reposts direto no cache, sem recarregar o feed.
- * No backend os contadores são eventualmente consistentes (cerca de meio segundo), então recarregar
- * logo depois de curtir traria o número antigo de volta. O valor certo chega na próxima carga.
+ * Atualiza as curtidas e os reposts direto no cache de TODOS os feeds já carregados (o mesmo post pode
+ * estar no home e no perfil), sem recarregar. No backend os contadores são eventualmente consistentes
+ * (cerca de meio segundo), então recarregar logo depois de curtir traria o número antigo de volta.
  */
 function patchEngagement(queryClient: QueryClient, postId: string, change: (current: Engagement) => Engagement) {
-  queryClient.setQueryData<FeedData>(
-    homeFeedKey,
+  queryClient.setQueriesData<FeedData>(
+    { queryKey: feedRootKey },
     (data) =>
       data && {
         ...data,

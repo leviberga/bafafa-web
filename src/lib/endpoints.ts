@@ -1,5 +1,13 @@
 import { request, setAccessToken } from './api'
-import type { Account, CreatedPost, RegisterInput, TimelinePage } from './types'
+import type {
+  Account,
+  CreatedPost,
+  FollowStats,
+  Profile,
+  RegisterInput,
+  TimelinePage,
+  UpdateProfileInput,
+} from './types'
 
 export const authApi = {
   async login(identifier: string, password: string): Promise<void> {
@@ -28,13 +36,38 @@ export const authApi = {
   },
 }
 
+function pageQuery(cursor?: string): string {
+  const query = new URLSearchParams({ limit: '20' })
+  if (cursor) {
+    query.set('cursor', cursor)
+  }
+  return query.toString()
+}
+
 export const timelineApi = {
   home(cursor?: string) {
-    const query = new URLSearchParams({ limit: '20' })
-    if (cursor) {
-      query.set('cursor', cursor)
-    }
-    return request<TimelinePage>(`/timeline/home?${query.toString()}`)
+    return request<TimelinePage>(`/timeline/home?${pageQuery(cursor)}`)
+  },
+  ofUser(handle: string, cursor?: string) {
+    return request<TimelinePage>(`/timeline/users/${encodeURIComponent(handle)}?${pageQuery(cursor)}`)
+  },
+}
+
+export const profilesApi = {
+  get(handle: string) {
+    return request<Profile>(`/profiles/${encodeURIComponent(handle)}`)
+  },
+  followStats(handle: string) {
+    return request<FollowStats>(`/profiles/${encodeURIComponent(handle)}/follow-stats`)
+  },
+  follow(handle: string) {
+    return request<void>(`/profiles/${encodeURIComponent(handle)}/follow`, { method: 'PUT' })
+  },
+  unfollow(handle: string) {
+    return request<void>(`/profiles/${encodeURIComponent(handle)}/follow`, { method: 'DELETE' })
+  },
+  updateMe(input: UpdateProfileInput) {
+    return request<Profile>('/profiles/me', { method: 'PUT', body: input })
   },
 }
 
