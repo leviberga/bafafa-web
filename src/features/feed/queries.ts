@@ -7,12 +7,15 @@ import {
   type UseInfiniteQueryResult,
 } from '@tanstack/react-query'
 import { postsApi, timelineApi } from '../../lib/endpoints'
-import type { Engagement, TimelinePage } from '../../lib/types'
+import type { Engagement, PostThread, TimelinePage } from '../../lib/types'
 
 /** Todo feed do app começa com 'feed', então dá para atualizar ou invalidar todos de uma vez. */
 export const feedRootKey = ['feed'] as const
 export const homeFeedKey = ['feed', 'home'] as const
 export const userFeedKey = (handle: string) => ['feed', 'user', handle] as const
+/** O post aberto na página do post (não é um feed, por isso fica fora da raiz 'feed'). */
+export const threadRootKey = ['thread'] as const
+export const threadKey = (id: string) => ['thread', id] as const
 
 export type FeedData = InfiniteData<TimelinePage, string | undefined>
 
@@ -48,11 +51,18 @@ export function useCreatePost() {
 }
 
 /**
- * Atualiza as curtidas e os reposts direto no cache de TODOS os feeds já carregados (o mesmo post pode
- * estar no home e no perfil), sem recarregar. No backend os contadores são eventualmente consistentes
+ * Atualiza as curtidas e os reposts direto no cache de TODOS os feeds e threads já carregados (o mesmo post
+ * pode estar no home, no perfil e aberto na página do post), sem recarregar. No backend os contadores são eventualmente consistentes
  * (cerca de meio segundo), então recarregar logo depois de curtir traria o número antigo de volta.
  */
 function patchEngagement(queryClient: QueryClient, postId: string, change: (current: Engagement) => Engagement) {
+  queryClient.setQueriesData<PostThread>(
+    { queryKey: threadRootKey },
+    (thread) =>
+      thread && thread.post.id === postId
+        ? { ...thread, post: { ...thread.post, engagement: change(thread.post.engagement) } }
+        : thread,
+  )
   queryClient.setQueriesData<FeedData>(
     { queryKey: feedRootKey },
     (data) =>

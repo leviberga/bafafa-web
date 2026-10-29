@@ -32,9 +32,9 @@ export interface PostCardData {
   engagement: Engagement
 }
 
-/** Em REPOST, `post` é o post original e `repostedBy` quem repostou. */
+/** Em REPOST, `post` é o post original e `repostedBy` quem repostou. Em REPLY, é uma resposta listada numa thread. */
 export interface TimelineItem {
-  kind: 'POST' | 'REPOST'
+  kind: 'POST' | 'REPOST' | 'REPLY'
   post: PostCardData
   repostedBy: Actor | null
 }
@@ -68,4 +68,15 @@ export interface FollowStats {
   followerCount: number
   followingCount: number
   followedByMe: boolean
+}
+
+/** O post a que uma resposta responde. `author` é nulo se esse post foi apagado. */
+export interface ReplyContext {
+  postId: string
+  author: Actor | null
+}
+
+export interface PostThread {
+  post: PostCardData
+  inReplyTo: ReplyContext | null
 }

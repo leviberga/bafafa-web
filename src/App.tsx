@@ -6,6 +6,7 @@ import { LoginPage } from './pages/LoginPage'
 import { NotFoundPage } from './pages/NotFoundPage'
 import { ProfilePage } from './pages/ProfilePage'
 import { RegisterPage } from './pages/RegisterPage'
+import { ThreadPage } from './pages/ThreadPage'
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
         <Route element={<AppShell />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/perfil/:handle" element={<ProfilePage />} />
+          <Route path="/post/:id" element={<ThreadPage />} />
         </Route>
       </Route>
 

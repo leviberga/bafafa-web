@@ -3,6 +3,7 @@ import type {
   Account,
   CreatedPost,
   FollowStats,
+  PostThread,
   Profile,
   RegisterInput,
   TimelinePage,
@@ -48,6 +49,12 @@ export const timelineApi = {
   home(cursor?: string) {
     return request<TimelinePage>(`/timeline/home?${pageQuery(cursor)}`)
   },
+  post(id: string) {
+    return request<PostThread>(`/timeline/posts/${encodeURIComponent(id)}`)
+  },
+  replies(id: string, cursor?: string) {
+    return request<TimelinePage>(`/timeline/posts/${encodeURIComponent(id)}/replies?${pageQuery(cursor)}`)
+  },
   ofUser(handle: string, cursor?: string) {
     return request<TimelinePage>(`/timeline/users/${encodeURIComponent(handle)}?${pageQuery(cursor)}`)
   },
@@ -74,6 +81,9 @@ export const profilesApi = {
 export const postsApi = {
   create(text: string) {
     return request<CreatedPost>('/posts', { method: 'POST', body: { text } })
+  },
+  reply(postId: string, text: string) {
+    return request<CreatedPost>(`/posts/${postId}/replies`, { method: 'POST', body: { text } })
   },
   like(postId: string) {
     return request<void>(`/posts/${postId}/like`, { method: 'PUT' })
